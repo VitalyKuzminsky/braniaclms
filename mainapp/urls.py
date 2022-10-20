@@ -1,0 +1,31 @@
+from mainapp import views
+from django.urls import path
+from mainapp.apps import MainappConfig
+
+# app_name = 'mainapp'  # Если не прописали from mainapp.apps import MainappConfig
+app_name = MainappConfig.name
+
+
+urlpatterns = [  # у нас 6 уникальных контролера, если их 1000, то нужно описать 1000
+    path('contacts/', views.ContactsView.as_view()),
+    path('courses/', views.CoursesListView.as_view()),
+    path('docsite/', views.DocSiteView.as_view()),
+    path('', views.IndexView.as_view()),
+    path('login/', views.LoginView.as_view()),
+    path('news/', views.NewsView.as_view()),
+]
+
+'''
+Это был вводный код 2-го урока:
+urlpatterns = [
+    path('', views.HelloWorldView.as_view()),
+    # path('', views.hello_world, name='hello_world'),  # это пустой паттерн - он ссылается на корень сайта.
+    # Для него импортируем views из mainapp.
+    # состав: '' паттерн - первый параментр, передающийся в path
+    # views.hello_world - ссылка на ф-ию, которую она быдет отрабатывать
+    # name='hello_world' - для быстрого доступа урла - сейчас писать его не будем.
+    # path('blog/', views.blog),
+    path('<str:word>/', views.blog),  # '<str:word>/' - динамические паттерны ключ:значение
+    # любая строка str, которая идёт после корня сайта, будет она будет обращена в .blog
+]
+'''
