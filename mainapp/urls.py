@@ -7,12 +7,15 @@ app_name = MainappConfig.name
 
 
 urlpatterns = [  # у нас 6 уникальных контролера, если их 1000, то нужно описать 1000
-    path('contacts/', views.ContactsView.as_view()),
-    path('courses/', views.CoursesListView.as_view()),
-    path('docsite/', views.DocSiteView.as_view()),
-    path('', views.IndexView.as_view()),
-    path('login/', views.LoginView.as_view()),
-    path('news/', views.NewsView.as_view()),
+    path('contacts/', views.ContactsView.as_view(), name='contacts'),
+    path('courses/', views.CoursesListView.as_view(), name='courses'),
+    path('docsite/', views.DocSiteView.as_view(), name='docsite'),
+    path('', views.IndexView.as_view(), name='index'),
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('news/', views.NewsView.as_view(), name='news'),
+    # path('blog/', views.NewsView.as_view(), name='news'),  # если вдруг понадобилось
+    # заменить адрес news на blog, мы просто его здесь меняем и всё продолжает работать
+    # с новым адресом
 ]
 
 '''

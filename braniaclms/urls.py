@@ -19,6 +19,7 @@ from django.views.generic import RedirectView  # для редиректа на 
 # from django.views.generic import ListView, CreateView, UpdateView, DeleteView, - другие
 # View, - отвечает за обработку входящего запроса
 # TemplateView - отвечает за отображение шаблона
+from mainapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # Это админка
@@ -29,5 +30,5 @@ urlpatterns = [
 
     #  т.к. наши ссылки не обображаются из-за того, что мы созали отдельный
     #  модуль mainapp/urls.py нужно их сюда добавить:
-    path('mainapp/', include('mainapp.urls'))  # 'mainapp.urls' - путь, где лежат урлы
+    path('mainapp/', include('mainapp.urls', namespace='mainapp')),  # 'mainapp.urls' - путь, где лежат урлы
 ]
