@@ -1,8 +1,5 @@
 {% extends 'mainapp/base.html' %}
-<!--{ load email_to_link } НЕ РАБОТАЕТ - знак % убрал из скобок, иначе совсем всё наработает
-TemplateSyntaxError at /mainapp/contacts/
-'email_to_link' is not a registered tag library. Must be one of:
--->
+{% load email_to_link %}
 {% block content %}
 
     <p>
@@ -39,8 +36,7 @@ TemplateSyntaxError at /mainapp/contacts/
             </ul>
             <ul class="list-unstyled">
               <li>Email</li>
-              <li><strong>{{ contact.email }}</strong></li>  <!-- используем функцию email_to_link -->
-              <!--<li><strong>{удалил уодну скобку{ contact.email|email_to_link }}</strong></li>-->
+              <li><strong>{{ contact.email|email_to_link }}</strong></li>  <!-- используем функцию email_to_link -->
             </ul>
             <ul class="list-unstyled">
               <li>Адрес</li>

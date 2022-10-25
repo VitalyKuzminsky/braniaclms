@@ -15,10 +15,13 @@
 <!--            эквивалентно:-->
 <!--              def date(date_obj, date_format):-->
 <!--                return date_obj.strftime(date_format)-->
-            <h6 class="card-subtitle mb-2 text-muted">{{ news_item.date|date:"d.m.Y" }}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">{{ news_item.created_at|date:"d.m.Y H:i" }}</h6>
+<!--            <h6 class="card-subtitle mb-2 text-muted">{{ news_item.date|date:"d.m.Y" }}</h6> Это старая запись
+без модели-->
 <!--            !!! Ненаходждение объекта, функции переменных в шаблоне не вываливается в ошибки-->
-            <p class="card-text">{{ news_item.preview }}</p>
-            <a href="#" class="card-link">Подробнее</a>
+            <p class="card-text">{{ news_item.preamble }}</p>
+<!--            <p class="card-text">{{ news_item.preview }}</p> Это старая запись без модели-->
+            <a href="{% url 'mainapp:news_detail' news_item.pk %}" class="card-link">Подробнее</a> <!--прописываем, как отрыть новость подробнее-->
           </div>
         </div>
         {% endfor %}  <!-- Закрытие блочного шаблонного тега   -->
