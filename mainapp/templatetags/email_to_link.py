@@ -3,7 +3,6 @@ from django import template
 from django.utils.safestring import mark_safe  # для того, что бы ссылка
 # отбражалась на странице не тегом
 
-
 register = template.Library()  # инициализируем регистратор
 
 

@@ -13,6 +13,7 @@ urlpatterns = [  # у нас 6 уникальных контролера, есл
     path('', views.IndexView.as_view(), name='index'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('news/', views.NewsView.as_view(), name='news'),
+    path('news/<pk>', views.NewsDetail.as_view(), name='news_detail'),  # контролер, который выводит отдельные новости
     # path('blog/', views.NewsView.as_view(), name='news'),  # если вдруг понадобилось
     # заменить адрес news на blog, мы просто его здесь меняем и всё продолжает работать
     # с новым адресом

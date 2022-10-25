@@ -79,8 +79,8 @@ WSGI_APPLICATION = 'braniaclms.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+    'default': {  # default - это псевдоним
+        'ENGINE': 'django.db.backends.sqlite3',  # здесь могут быть и другие БД. sqlite3 создаётся по умолчанию
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
