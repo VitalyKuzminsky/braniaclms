@@ -12,7 +12,13 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 
+import django.contrib.auth.backends
+import social_core.backends.github
+import social_django.context_processors
+
 import mainapp.context_processor
+from braniaclms.key_read import get_key
+from braniaclms.secret_read import get_secret
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'mainapp',
+    'social_django',  # добавили регистрацию через соцсети
+
+    'authapp',  # добавили свою авторизацию
+    'mainapp',  # добавили свои апки
 ]
 
 MIDDLEWARE = [
@@ -66,7 +75,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'mainapp.context_processor.my_context_processor'
+                'mainapp.context_processor.my_context_processor',
+                # добавляем контекстные процессоры для social_django
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -120,7 +132,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'  # эта настройка работает, когда проект в сети
+STATIC_URL = 'static/'  # эта настройка работает, когда проект в сети. Статику загружаем мы - программисты
 STATICFILES_DIRS = [  # добавили в проект статику css, img, js, webfonts, favicon.ico, чтобы было видно локально
     BASE_DIR / 'static',
 ]
@@ -129,3 +141,30 @@ STATICFILES_DIRS = [  # добавили в проект статику css, img
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/'  # Сами прописываем Медиа - картики, видео, голосовые, просто файлы - всё, что загружает юзер!
+
+MEDIA_ROOT = BASE_DIR / 'media'  # Для работы с медиа этой и предыдущей настройки !не хватит!. Тут абсолютный путь.
+# Папку media мы не создаём - она будет создана автоматически при первой загрузке.
+
+AUTH_USER_MODEL = 'authapp.User'  # т.к. добавлена новая модель юзера class User(AbstractUser) и через неё
+# будем работать, то прописываем эту строку - дописываем путь до нашей новой модели. До этого ссылка была на
+# базового User.
+LOGIN_REDIRECT_URL = 'mainapp:index'  # это куда нас отправит система после того, как мы зашли в систему
+LOGOUT_REDIRECT_URL = 'mainapp:index'  # это куда нас отправит система после того, как мы вышли из системы
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'  # Настраиваем место хранения для сообщений.
+# SessionStorage - это обозначает, что мы используем сессии(продолжительная работа пользователя на сайте в системе).
+# По сути это получается: взять что-то положить в сессию, на фронте это вытащить из сессии и затереть сессию.
+# Это стандартый патет Django.
+
+# расширяем backend для аутентификции social_django:
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# ключи нужно складывать в отдельные переменные окружения и работать через подгрузку или сложить в файл, которы будуют
+# в gitignore. Я сделал через файлы, которые git игнорирует key.pyc и secret.pyc
+SOCIAL_AUTH_GITHUB_KEY = get_key()
+SOCIAL_AUTH_GITHUB_SECRET = get_secret()
