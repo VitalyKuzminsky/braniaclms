@@ -2,6 +2,9 @@ from django.db import models
 # здесть создаём структуру БД
 
 
+NULLABLE = {'blank': True, 'null': True}
+
+
 # Создаём аналог таблички новостей
 class News(models.Model):  #для этого создаём класс, который наследуется от модуля models и в нём класс Model
     """
