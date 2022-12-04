@@ -3,6 +3,7 @@
 <form class="col-6 m-auto pt-5 pb-5" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <p>
+        Логин:
         <input type="text" name="username" autofocus=""
                value="{{ user.username }}"
                autocapitalize="none" autocomplete="username"
@@ -10,6 +11,7 @@
                required="" id="id_username" placeholder="Логин">
     </p>
     <p>
+        Электронная почта:
         <input type="text" name="email" autofocus=""
                value="{{ user.email }}"
                autocapitalize="none" autocomplete="email"
@@ -17,18 +19,21 @@
                required="" id="id_email" placeholder="Электронная почта">
     </p>
     <p>
+        Имя:
         <input type="text" name="first_name" autocapitalize="none"
                value="{{ user.first_name }}"
                maxlength="150" class="textinput textInput form-control"
                required="" placeholder="Имя">
     </p>
     <p>
+        Фамилия:
         <input type="text" name="last_name" autocapitalize="none"
                value="{{ user.last_name }}"
                maxlength="150" class="textinput textInput form-control"
                required="" placeholder="Фамилия">
     </p>
     <p>
+        Возраст:
         <input type="number" name="age" autocapitalize="none"
                value="{{ user.age }}"
                class="textinput textInput form-control"
