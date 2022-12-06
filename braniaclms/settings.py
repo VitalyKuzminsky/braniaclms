@@ -61,7 +61,7 @@ ROOT_URLCONF = 'braniaclms.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],  # это папка для кастомизации админки
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

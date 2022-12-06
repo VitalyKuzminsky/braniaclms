@@ -21,7 +21,7 @@
 <!--            !!! Ненаходждение объекта, функции переменных в шаблоне не вываливается в ошибки-->
             <p class="card-text">{{ news_item.preamble }}</p>
 <!--            <p class="card-text">{{ news_item.preview }}</p> Это старая запись без модели-->
-            <a href="{% url 'mainapp:news_detail' news_item.pk %}" class="card-link">Подробнее</a> <!--прописываем, как отрыть новость подробнее-->
+            <a href="{% url 'mainapp:news_detail' news_item.pk %}" class="card-link" target="_blank">Подробнее</a> <!--прописываем, как отрыть новость подробнее-->
           </div>
         </div>
         {% endfor %}  <!-- Закрытие блочного шаблонного тега   -->

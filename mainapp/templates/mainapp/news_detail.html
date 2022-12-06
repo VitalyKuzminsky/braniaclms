@@ -11,7 +11,7 @@
             <h6 class="card-subtitle mb-2 text-muted">{{ object.created_at|date:"d.m.Y H:i" }}</h6>
             <p class="card-text">{{ object.preamble }}</p>
             <p class="card-text">{{ object.body|safe }}</p>  <!--safe - чтобы текст выводился без html-тегов-->
-            <a href="#" class="card-link">Подробнее</a>
+            <a href="{% url 'mainapp:news' %}" class="card-link">Назад к новостям</a>
           </div>
         </div>
 
