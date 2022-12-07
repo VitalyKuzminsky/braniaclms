@@ -1,78 +1,80 @@
-{% extends 'authapp/base.html' %}
-{% block content %}
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <p>
-        <input type="text" name="username" autofocus=""
-               autocapitalize="none" autocomplete="username"
-               maxlength="150" class="textinput textInput form-control"
-               required="" id="id_username" placeholder="Логин">
-    </p>
-    <p>
-        <input type="text" name="email" autofocus=""
-               autocapitalize="none" autocomplete="email"
-               maxlength="150" class="textinput textInput form-control"
-               required="" id="id_email" placeholder="Электронная почта">
-    </p>
-    <p>
-        <input type="password" name="password_1"
-               autocomplete="current-password"
-               class="textinput textInput form-control" required=""
-               id="id_password_1" placeholder="Пароль">
-    </p>
-    <p>
-        <input type="password" name="password_2"
-               autocomplete="current-password"
-               class="textinput textInput form-control" required=""
-               id="id_password_2" placeholder="Повтор пароля">
-    </p>
-    <p>
-        <input type="text" name="first_name" autocapitalize="none"
-               maxlength="150" class="textinput textInput form-control"
-               required="" placeholder="Имя">
-    </p>
-    <p>
-        <input type="text" name="last_name" autocapitalize="none"
-               maxlength="150" class="textinput textInput form-control"
-               required="" placeholder="Фамилия">
-    </p>
-    <p>
-        <input type="number" name="age" autocapitalize="none"
-               class="textinput textInput form-control"
-               required="" placeholder="Возраст">
-    </p>
-    <p>
-        <input type="file" name="avatar"
-               class="textinput textInput form-control"
-               required="" placeholder="Avatar">
-    </p>
-    <p>
-        <button type="submit" class="btn btn-primary btn-block">
-            Зарегистрироваться
-        </button>
-    </p>
-</form>
-<p>
-    <div class="row justify-content-between">
-        <div class="col">
-            <a href="{% url 'authapp:login' %}"><small>Войти</small></a>
-        </div>
-        <div class="col">
-            <a href="#"><small>Забыли пароль?</small></a>
-        </div>
-    </div>
-</p>
+<!--этот файл больше не нужен-->
+<!--{% extends 'authapp/base.html' %}-->
+<!--{% block content %}-->
+<!--<form method="post" enctype="multipart/form-data">-->
+<!--    {% csrf_token %}-->
+<!--    {{ form.as_p }}-->
+<!--&lt;!&ndash;    <p>  ТЕПЕРЬ ЭТО НЕ НУЖНО - МЫ ОПИСАЛИ ЧЕРЕЗ ФОРМУ&ndash;&gt;-->
+<!--&lt;!&ndash;        <input type="text" name="username" autofocus=""&ndash;&gt;-->
+<!--&lt;!&ndash;               autocapitalize="none" autocomplete="username"&ndash;&gt;-->
+<!--&lt;!&ndash;               maxlength="150" class="textinput textInput form-control"&ndash;&gt;-->
+<!--&lt;!&ndash;               required="" id="id_username" placeholder="Логин">&ndash;&gt;-->
+<!--&lt;!&ndash;    </p>&ndash;&gt;-->
+<!--&lt;!&ndash;    <p>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input type="text" name="email" autofocus=""&ndash;&gt;-->
+<!--&lt;!&ndash;               autocapitalize="none" autocomplete="email"&ndash;&gt;-->
+<!--&lt;!&ndash;               maxlength="150" class="textinput textInput form-control"&ndash;&gt;-->
+<!--&lt;!&ndash;               required="" id="id_email" placeholder="Электронная почта">&ndash;&gt;-->
+<!--&lt;!&ndash;    </p>&ndash;&gt;-->
+<!--&lt;!&ndash;    <p>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input type="password" name="password_1"&ndash;&gt;-->
+<!--&lt;!&ndash;               autocomplete="current-password"&ndash;&gt;-->
+<!--&lt;!&ndash;               class="textinput textInput form-control" required=""&ndash;&gt;-->
+<!--&lt;!&ndash;               id="id_password_1" placeholder="Пароль">&ndash;&gt;-->
+<!--&lt;!&ndash;    </p>&ndash;&gt;-->
+<!--&lt;!&ndash;    <p>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input type="password" name="password_2"&ndash;&gt;-->
+<!--&lt;!&ndash;               autocomplete="current-password"&ndash;&gt;-->
+<!--&lt;!&ndash;               class="textinput textInput form-control" required=""&ndash;&gt;-->
+<!--&lt;!&ndash;               id="id_password_2" placeholder="Повтор пароля">&ndash;&gt;-->
+<!--&lt;!&ndash;    </p>&ndash;&gt;-->
+<!--&lt;!&ndash;    <p>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input type="text" name="first_name" autocapitalize="none"&ndash;&gt;-->
+<!--&lt;!&ndash;               maxlength="150" class="textinput textInput form-control"&ndash;&gt;-->
+<!--&lt;!&ndash;               required="" placeholder="Имя">&ndash;&gt;-->
+<!--&lt;!&ndash;    </p>&ndash;&gt;-->
+<!--&lt;!&ndash;    <p>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input type="text" name="last_name" autocapitalize="none"&ndash;&gt;-->
+<!--&lt;!&ndash;               maxlength="150" class="textinput textInput form-control"&ndash;&gt;-->
+<!--&lt;!&ndash;               required="" placeholder="Фамилия">&ndash;&gt;-->
+<!--&lt;!&ndash;    </p>&ndash;&gt;-->
+<!--&lt;!&ndash;    <p>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input type="number" name="age" autocapitalize="none"&ndash;&gt;-->
+<!--&lt;!&ndash;               class="textinput textInput form-control"&ndash;&gt;-->
+<!--&lt;!&ndash;               required="" placeholder="Возраст">&ndash;&gt;-->
+<!--&lt;!&ndash;    </p>&ndash;&gt;-->
+<!--&lt;!&ndash;    <p>&ndash;&gt;-->
+<!--&lt;!&ndash;        <input type="file" name="avatar"&ndash;&gt;-->
+<!--&lt;!&ndash;               class="textinput textInput form-control"&ndash;&gt;-->
+<!--&lt;!&ndash;               required="" placeholder="Avatar">&ndash;&gt;-->
+<!--&lt;!&ndash;    </p>&ndash;&gt;-->
+<!--    <p>-->
+<!--        <button type="submit" class="btn btn-primary btn-block">-->
+<!--            Зарегистрироваться-->
+<!--        </button>-->
+<!--    </p>-->
+<!--</form>-->
+<!--<p>-->
+<!--    <div class="row justify-content-between">-->
+<!--        <div class="col">-->
+<!--            <a href="{% url 'authapp:login' %}"><small>Войти</small></a>-->
+<!--        </div>-->
+<!--        <div class="col">-->
+<!--            <a href="#"><small>Забыли пароль?</small></a>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</p>-->
 
-{% endblock %}
+<!--{% endblock %}-->
 
-{% block js %}
-    <script>
-        $(document).ready(function () {
-            {% if messages %}
-                // Toasts
-                $(".toast").toast({ delay: 5000 });
-                $(".toast").toast("show");
-            {% endif %}
-        });
-    </script>
-{% endblock %}
+<!--{% block js %}-->
+<!--    <script>-->
+<!--        $(document).ready(function () {-->
+<!--            {% if messages %}-->
+<!--                // Toasts-->
+<!--                $(".toast").toast({ delay: 5000 });-->
+<!--                $(".toast").toast("show");-->
+<!--            {% endif %}-->
+<!--        });-->
+<!--    </script>-->
+<!--{% endblock %}-->
