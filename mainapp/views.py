@@ -1,8 +1,15 @@
 # from django.views.generic import View  # Переписываем вьюшки на классы
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.views.generic import TemplateView
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView, ListView, UpdateView, DeleteView, DetailView, CreateView
 
-from mainapp.models import News
+from mainapp.forms import CourseFeedbackForm
+# с List по Create это нужно, что бы переделать class NewsView(TemplateView)
+
+from mainapp.models import News, Course, Lesson, CourseTeacher, CourseFeedback
 
 """
 создаём 6 контроллеров для нашего проекта - 6 страниц, каждый из них принимает запрос, 
@@ -42,8 +49,10 @@ class ContactsView(TemplateView):
         return context_data
 
 
-class CoursesListView(TemplateView):
+# Вывод курсов:
+class CoursesListView(ListView):
     template_name = 'mainapp/courses_list.html'
+    model = Course
 
 
 class DocSiteView(TemplateView):
@@ -65,6 +74,98 @@ class LoginView(TemplateView):
     template_name = 'mainapp/login.html'
 
 
+class NewsListView(ListView):
+    model = News  # Указываем какую модель используем
+    paginate_by = 5  # стандартная настройка отображения количества новостей на странице
+
+    def get_queryset(self):
+        """
+        Переопределяем get_queryset
+        :return: выводим только те новости, которые не помечены, как удалённые deleted=False
+        """
+        return super().get_queryset().filter(deleted=False)
+
+
+class NewsDetailView(DetailView):
+    model = News
+
+    # Здесь в get_object_or_404() по хорошему нужно отловить ссылки на удалённые новости и выдать 404 ошибку
+
+
+class NewsCreateView(PermissionRequiredMixin, CreateView):
+    model = News
+    fields = '__all__'  # Выводим все поля - форма выведет через криспи. Ключевое слово '__all__' - возволяет вывести
+    # все поля, которые есть
+    success_url = reverse_lazy('mainapp:news')  # редирект на список новостей
+    permission_required = ('mainapp.add_news',)  # доступы - объявляем права доступа на добавление новостей, проверяем,
+    # что у юзера есть такие права
+
+
+class NewsUpdateView(PermissionRequiredMixin, UpdateView):
+    model = News
+    fields = '__all__'  # Выводим все поля - форма выведет через криспи. Ключевое слово '__all__' - позволяет вывести
+    # все поля, которые есть
+    success_url = reverse_lazy('mainapp:news')  # редирект на список новостей
+    permission_required = ('mainapp.change_news',)  # доступы - объявляем права доступа на изменение новостей,
+    # проверяем, что у юзера есть такие права. change_news - эти права создаются автоматически, как только заводим
+    # модель.
+
+
+class NewsDeleteView(PermissionRequiredMixin, DeleteView):
+    model = News
+    success_url = reverse_lazy('mainapp:news')
+    permission_required = ('mainapp.delete_news',)
+
+
+# реализуем контролер для отображаения курса
+class CourseDetailView(TemplateView):
+    template_name = 'mainapp/courses_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        # Описываем получение курса и уроков к нему. Используем метод 404, который может вернуть объект или 404 ошибку.
+        # Т.е. она пытается получить из базы объект по фильтрации, который мы передадим, если объекта нет, то он
+        # возвращает страницу 404. Если мы не пулучили курс из БД, то 404.
+        context_data['course_object'] = get_object_or_404(Course, pk=self.kwargs.get('pk'))
+        # Далее получение списка уроков. Без 404 - фильтруем по курсам, который лежи в course_object, т.к.
+        # если его там не лежит, то пользователю выкинуло 404 ошибку.
+        context_data['lessons'] = Lesson.objects.filter(course=context_data['course_object'])
+        # преподаватели
+        context_data['teachers'] = CourseTeacher.objects.filter(courses=context_data['course_object'])
+        context_data['feedback_list'] = CourseFeedback.objects.filter(course=context_data['course_object'])
+
+        # Вот как я думал не заработало:
+        # context_data['lessons'] = Lesson.course.filter(course=context_data['course_object'])
+        # # преподаватели
+        # context_data['teachers'] = CourseTeacher.courses.filter(courses=context_data['course_object'])
+        # context_data['feedback_list'] = CourseFeedback.course.filter(course=context_data['course_object'])
+
+        # если пользователь авторизован, то будем выводить feedback_form, а собираем её из CourseFeedbackForm
+        if self.request.user.is_authenticated:
+            context_data['feedback_form'] = CourseFeedbackForm(
+                course=context_data['course_object'],
+                user=self.request.user
+            )
+
+        return context_data
+
+
+# реализуем контролер для сохранения отзывов на курсы
+class CourseFeedbackCreateView(CreateView):
+    model = CourseFeedback
+    form_class = CourseFeedbackForm
+
+    # ответ будем отправлять из form_valid
+    def form_valid(self, form):
+        # Форму form, которую приняли в этот метод - мы её сохраняем
+        self.object = form.save()
+        # Рендерим блок с отзывами с помощью функции render_to_string, которая рендерит строку из указанного шаблона
+        # mainapp/includes/feedback_card.html и контекста context=
+        rendered_template = render_to_string('mainapp/includes/feedback_card.html', context={'item': self.object})
+        return JsonResponse({'card': rendered_template})
+
+
+""" Это всё закомментировал - делаем новости по новому
 class NewsView(TemplateView):
     template_name = 'mainapp/news.html'
 
@@ -111,9 +212,9 @@ class NewsView(TemplateView):
         # },
         # ]
         return context_data
+"""
 
-
-class NewsDetail(TemplateView):  # вывод дной конкретной новости
+"""class NewsDetail(TemplateView):  # вывод одной конкретной новости
     template_name = 'mainapp/news_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -124,7 +225,7 @@ class NewsDetail(TemplateView):  # вывод дной конкретной но
         context_data['object'] = get_object_or_404(News, pk=self.kwargs.get('pk'))  # get_object_or_404 - это
         # специальная ф-ия, которая принимает модель New и условия фильтрации pk=self.kwargs.get('pk') - условия
         # фильтрации, как правило идёт по первичому ключу
-        return context_data
+        return context_data"""
 
 
 '''

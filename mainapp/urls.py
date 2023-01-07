@@ -9,14 +9,23 @@ app_name = MainappConfig.name
 urlpatterns = [  # у нас 6 уникальных контролера, если их 1000, то нужно описать 1000
     path('contacts/', views.ContactsView.as_view(), name='contacts'),
     path('courses/', views.CoursesListView.as_view(), name='courses'),
+    path('courses/<int:pk>/detail/', views.CourseDetailView.as_view(), name='courses_detail'),
+    path('courses/feedback/', views.CourseFeedbackCreateView.as_view(), name='course_feedback'),
     path('docsite/', views.DocSiteView.as_view(), name='docsite'),
     path('', views.IndexView.as_view(), name='index'),
     path('login/', views.LoginView.as_view(), name='login'),
-    path('news/', views.NewsView.as_view(), name='news'),
-    path('news/<pk>', views.NewsDetail.as_view(), name='news_detail'),  # контролер, который выводит отдельные новости
+
+    # News
+    path('news/', views.NewsListView.as_view(), name='news'),
+    path('news/add/', views.NewsCreateView.as_view(), name='news_create'),
+    # path('news/update/', views.NewsUpdateView.as_view(), name='news_update'),
+    path('news/<int:pk>/update/', views.NewsUpdateView.as_view(), name='news_update'),  # <int:pk>, где int -
+    # валидация, pk - id.
+    path('news/<int:pk>/detail', views.NewsDetailView.as_view(), name='news_detail'),  # контролер, который выводит отдельные новости
     # path('blog/', views.NewsView.as_view(), name='news'),  # если вдруг понадобилось
     # заменить адрес news на blog, мы просто его здесь меняем и всё продолжает работать
     # с новым адресом
+    path('news/<int:pk>/delete', views.NewsDeleteView.as_view(), name='news_delete'),
 ]
 
 '''

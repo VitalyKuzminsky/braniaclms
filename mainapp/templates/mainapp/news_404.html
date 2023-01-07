@@ -13,10 +13,7 @@
         <div class="card shadow">
 <!--        <div class="card my-2">-->
           <div class="card-body">
-            <h5 class="card-title">{{ object.title }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ object.created_at|date:"d.m.Y H:i" }}</h6>
-            <p class="card-text">{{ object.preamble }}</p>
-            <p class="card-text">{{ object.body|safe }}</p>  <!--safe - чтобы текст выводился без html-тегов-->
+            <p class="card-text">Упс, такой новости нет, сорян.</p>
             <a href="{% url 'mainapp:news' %}" class="btn btn-primary">Назад к новостям</a>
 <!--            <a href="{% url 'mainapp:news' %}" class="card-link">Назад к новостям</a>-->
           </div>
