@@ -1,11 +1,14 @@
 # from django.views.generic import View  # Переписываем вьюшки на классы
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.http import JsonResponse
+from django.conf import settings
+from django.core.cache import cache
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
+from django.http import JsonResponse, FileResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, ListView, UpdateView, DeleteView, DetailView, CreateView
+from django.views.generic import TemplateView, ListView, UpdateView, DeleteView, DetailView, CreateView, View
 
+from mainapp import tasks
 from mainapp.forms import CourseFeedbackForm
 # с List по Create это нужно, что бы переделать class NewsView(TemplateView)
 
@@ -47,6 +50,15 @@ class ContactsView(TemplateView):
             },
         ]
         return context_data
+
+    # Обрабатываем post-запрос для отправки формы
+    def post(self, *args, **kwargs):
+        message_body = self.request.POST.get('message_body')
+        message_form = self.request.user.pk if self.request.user.is_authenticated else None
+        tasks.send_feedback_mail.delay(message_body, message_form)  # вызываем отложенную задачу delay(отложенный вызов)
+        # - добавляем её в очередь, в параметры передаём сообщение и от кого оно пришло.
+
+        return HttpResponseRedirect(reverse_lazy('mainapp:contacts'))
 
 
 # Вывод курсов:
@@ -132,9 +144,24 @@ class CourseDetailView(TemplateView):
         context_data['lessons'] = Lesson.objects.filter(course=context_data['course_object'])
         # преподаватели
         context_data['teachers'] = CourseTeacher.objects.filter(courses=context_data['course_object'])
-        context_data['feedback_list'] = CourseFeedback.objects.filter(course=context_data['course_object'])
 
-        # Вот как я думал не заработало:
+        # Для конкретного курса сделаем низкоуровневое кеширование внутри контроллера.
+        # Ключ:
+        feedback_list_key = f'course_feedback_{context_data["course_object"].pk}'
+        # В первую очередь нужно проверить есть ли данные в кеше
+        cached_feedback_list = cache.get(feedback_list_key)  # тут уникальный
+        # идентификатор курса, который будет отправлять нас на уникальный список фидбеков на этот курс
+        # далее проверяем:
+        if cached_feedback_list is None:  # если пусто, то:
+            context_data['feedback_list'] = CourseFeedback.objects.filter(course=context_data['course_object'])  # из БД
+            # выбираем feedback_list, который нам нужен
+            # Если было успешно, то передаём ключ и записываем feedback_list в кеш
+            cache.set(feedback_list_key, context_data['feedback_list'], timeout=300)  # timeout - время жизни кеша
+        # если он есть, то забираем его из кеша
+        else:
+            context_data['feedback_list'] = cached_feedback_list
+
+        # Вот как я думал - не заработало:
         # context_data['lessons'] = Lesson.course.filter(course=context_data['course_object'])
         # # преподаватели
         # context_data['teachers'] = CourseTeacher.courses.filter(courses=context_data['course_object'])
@@ -163,6 +190,41 @@ class CourseFeedbackCreateView(CreateView):
         # mainapp/includes/feedback_card.html и контекста context=
         rendered_template = render_to_string('mainapp/includes/feedback_card.html', context={'item': self.object})
         return JsonResponse({'card': rendered_template})
+
+
+# Контроллер лога
+class LogView(UserPassesTestMixin, TemplateView):
+    template_name = 'mainapp/logs.html'
+
+    # Делаем, чтобы логи видны были только админу
+    def test_func(self):
+        return self.request.user.is_superuser  # Если тут будет False, то нам недаст отобразить страницу
+
+    def get_context_data(self, **kwargs):
+        # наследуем context_data от родителя, даже если там ничего нет
+        context_data = super().get_context_data(**kwargs)
+        # список логов
+        log_lines = []
+        # открываем файл на чтение
+        with open(settings.BASE_DIR / 'log/main_log.log') as log_file:
+            for i, line in enumerate(log_file):
+                if i == 1000:
+                    break
+                log_lines.insert(0, line)  # такая запись позволяет записывать свежие логи в начало файла
+
+            context_data['logs'] = log_lines
+        return context_data
+
+
+# Контроллер для скачивания логов
+class LogDownloadView(UserPassesTestMixin, View):
+
+    # Проверка на админа
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, *args, **kwargs):
+        return FileResponse(open(settings.LOG_FILE, "rb"))  # Указываем флаг для чтения в битовом формате "rb"
 
 
 """ Это всё закомментировал - делаем новости по новому
@@ -224,7 +286,7 @@ class NewsView(TemplateView):
         # А надо бы 404 - страница не найдена. Для этого перепишем эту строку:
         context_data['object'] = get_object_or_404(News, pk=self.kwargs.get('pk'))  # get_object_or_404 - это
         # специальная ф-ия, которая принимает модель New и условия фильтрации pk=self.kwargs.get('pk') - условия
-        # фильтрации, как правило идёт по первичому ключу
+        # фильтрации, как правило идёт по первичному ключу
         return context_data"""
 
 
@@ -234,7 +296,7 @@ class NewsView(TemplateView):
 class HelloWorldView(View):  # класс HelloWorldView наследуется от View
 
     # Описываем поведение для GET-запроса:
-    def get(self, request, *args, **kwargs):  # **kwargs - все параметры, которые могут сюда приходитьlf
+    def get(self, request, *args, **kwargs):  # **kwargs - все параметры, которые могут сюда приходить
         """
         классы принимают сам объект self
         :param request: запрос

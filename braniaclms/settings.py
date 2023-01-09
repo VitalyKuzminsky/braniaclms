@@ -29,8 +29,37 @@ SECRET_KEY = 'django-insecure-2i+sh46c5f@2719%=nwpah#l_o76ti7pk0jj**(x)&iupzg^tg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
+if DEBUG:
+    INTERNAL_IPS = [
+        "127.0.0.1",
+    ]
+
+# Настройки для подключения кеша
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
+# Настройки для Отложеных задач через celery
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+# EMAIL_HOST = "localhost"
+# EMAIL_PORT = "25"
+# EMAIL_HOST_USER = "django@geekshop.local"
+# EMAIL_HOST_PASSWORD = "geekshop"
+# EMAIL_USE_SSL = True
+
+# Настройка для работы на тесте
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = "emails-tmp"
 
 # Application definition
 
@@ -43,6 +72,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'crispy_forms',
+    'debug_toolbar',
 
     'authapp',
     'mainapp',
@@ -56,6 +86,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'braniaclms.urls'
@@ -146,3 +177,86 @@ LOGOUT_REDIRECT_URL = 'mainapp:index'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'  # мы испульзуем bootstrap версии 4 для раскрашивания форм
+
+# # Логирование - файл-хендлер:
+# LOG_FILE = BASE_DIR / "log" / "main_log.log"  # вручную создать папку log и добавить её в gitignore
+#
+# LOGGING = {
+#     "version": 1,  # версия
+#     "disable_existing_loggers": False,  # отключение других логеров флагом True
+#     "formatters": {  # формат выводимой строки
+#         "console": {  # логгер - консоль
+#             "format": "[%(asctime)s] %(levelname)s %(name)s (%(lineno)d)% (message)s"  # текуще время, название уровня,
+#             # название уровня, уровень строки (в которой всё вызывалось), сообщение
+#         },
+#     },
+#     "handlers": {  # определение логеров
+#         "file": {
+#             "level": "INFO",
+#             "class": "logging.FileHandler",
+#             "filename": LOG_FILE,
+#             "formatter": "console",
+#         },
+#         "console": {"class": "logging.StreamHandler", "formatter": "console"},  # класс, пакет логера, формат: консоль
+#     },
+#     "loggers": {  # настройки для логгеров
+#         "django": {"level": "INFO", "handlers": ["file", "console"]},  # минимальный уровень сообщения INFO (собираются
+#         # все логи от уровня INFO, включая его и выше), хендлер: консоль
+#         # "mainapp": {
+#         #     "level": "DEBUG",
+#         #     "handlers": ["file"],
+#         # },
+#     },
+# }
+
+# Логирование - стрим-хендлер:
+# LOGGING = {
+#     "version": 1,  # версия
+#     "disable_existing_loggers": False,  # отключение других логеров флагом True
+#     "formatters": {  # формат выводимой строки
+#         "console": {  # логгер - консоль
+#             "format": "[%(asctime)s] %(levelname)s %(name)s (%(lineno)d)% (message)s"  # текуще время, название
+#             # уровня, название уровня, уровень строки (в которой всё вызывалось), сообщение
+#         },
+#     },
+#     "handlers": {  # определение логеров
+#         # "file": {
+#         #     "level": "DEBUG",
+#         #     "class": "logging.FileHandler",
+#         #     "filename": LOG_FILE,
+#         #     "formatter": "console",
+#         # },
+#         "console": {"class": "logging.StreamHandler", "formatter": "console"},  # класс, пакет логера, формат: консоль
+#     },
+#     "loggers": {  # настройки для логгеров
+#         "django": {"level": "INFO", "handlers": ["console"]},  # минимальный уровень сообщения INFO, хендлер: консоль
+#         # "mainapp": {
+#         #     "level": "DEBUG",
+#         #     "handlers": ["file"],
+#         # },
+#     },
+# }
+
+LOG_FILE = BASE_DIR / "log" / "main_log.log"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "console": {
+            "format": "[%(asctime)s] %(levelname)s %(name)s (%(lineno)d) %(message)s"
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": LOG_FILE,
+            "formatter": "console",
+        },
+        "console": {"class": "logging.StreamHandler", "formatter": "console"},
+    },
+    "loggers": {
+        "django": {"level": "INFO", "handlers": ["file", "console"]},
+    },
+}

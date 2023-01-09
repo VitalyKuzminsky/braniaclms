@@ -2,11 +2,23 @@
 {% load email_to_link %}
 {% block content %}
 
-    <p>
+<p xmlns="http://www.w3.org/1999/html">
     <div class="jumbotron jumbotron-fluid">
       <div class="container">
         <h1 class="display-4">Наши контакты</h1>
         <p class="lead">Обязательно свяжитесь с нами! Ваш комфорт - наша забота.</p>
+        <div class="row">
+            <form method="post" class="form-group col-5">
+                {% csrf_token %}
+<!--                E-mail:-->
+<!--                <input class="form-control" name="message_form" />-->
+<!--                <br>-->
+                Ваше сообщение:
+                <textarea class="form-control" name="message_body"></textarea>
+                <br>
+                <input type="submit" class="btn btn-primary" value="Отправить" />
+            </form>
+        </div>
       </div>
     </div>
     </p>

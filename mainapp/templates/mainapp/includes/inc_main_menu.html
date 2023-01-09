@@ -21,6 +21,8 @@
                 {% endif %}
                 {% if user.is_superuser %}
                     <a class="dropdown-item" href="{% url 'admin:index' %}">Административный раздел</a>
+                    <a class="dropdown-item" href="{% url 'mainapp:logs_list' %}">Логирование сервера</a>
+                    <a class="dropdown-item" href="{% url 'mainapp:logs_download' %}">Скачать лог</a>
                 {% endif %}
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{% url 'authapp:logout' %}">Выход</a>
