@@ -139,7 +139,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': BASE_DIR / 'lms',
+            'NAME': 'lms',
             'USER': 'postgres'
         }
     }
