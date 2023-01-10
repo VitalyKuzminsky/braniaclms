@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+# Вытаскиваем все переменные окружения:
+from dotenv import load_dotenv
 
 import django.contrib.messages.storage.session
 
@@ -18,6 +20,7 @@ import mainapp.context_processor
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')  # это работает для ручного развёртывания проекта
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,9 +30,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2i+sh46c5f@2719%=nwpah#l_o76ti7pk0jj**(x)&iupzg^tg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# отключаем DEBUG для prod
+# DEBUG = True
+DEBUG = True if os.getenv('DEBUG') == 'True' else False  # отработает даже, если нет значения или файла
 
 ALLOWED_HOSTS = ["*"]
+
+ENV_TYPE = os.getenv('ENV_TYPE', 'prod')
 
 # if DEBUG:
 #     INTERNAL_IPS = [
@@ -121,12 +128,21 @@ WSGI_APPLICATION = 'braniaclms.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {  # default - это псевдоним
-        'ENGINE': 'django.db.backends.sqlite3',  # здесь могут быть и другие БД. sqlite3 создаётся по умолчанию
-        'NAME': BASE_DIR / 'db.sqlite3',
+if ENV_TYPE == 'local':
+    DATABASES = {
+        'default': {  # default - это псевдоним
+            'ENGINE': 'django.db.backends.sqlite3',  # здесь могут быть и другие БД. sqlite3 создаётся по умолчанию
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': BASE_DIR / 'lms',
+            'USER': 'postgres'
+        }
+    }
 
 
 # Password validation
@@ -165,9 +181,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'  # эта настройка работает, когда проект в сети
-STATICFILES_DIRS = [  # добавили в проект статику css, img, js, webfonts, favicon.ico, чтобы было видно локально
-    BASE_DIR / 'static',
-]
+if ENV_TYPE == 'local':
+    STATICFILES_DIRS = [  # добавили в проект статику css, img, js, webfonts, favicon.ico, чтобы было видно локально
+        BASE_DIR / 'static',
+    ]
+else:
+    STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
