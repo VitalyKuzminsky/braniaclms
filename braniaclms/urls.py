@@ -25,6 +25,7 @@ from mainapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # Это админка
+    path('i18n/', include('django.conf.urls.i18n')),  # для переключения перевода
     path('', RedirectView.as_view(url='mainapp/')),  # редирект с пустого ула на корень сайта.
     # в скобках передаём ардес на который нас редиректить url='mainapp/'
     # Всегда, когда используются классы, как RedirectView нужно передават .as_view,

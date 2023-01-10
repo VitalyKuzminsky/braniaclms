@@ -88,7 +88,7 @@ class LoginView(TemplateView):
 
 class NewsListView(ListView):
     model = News  # Указываем какую модель используем
-    paginate_by = 5  # стандартная настройка отображения количества новостей на странице
+    paginate_by = 4  # стандартная настройка отображения количества новостей на странице
 
     def get_queryset(self):
         """
@@ -174,6 +174,12 @@ class CourseDetailView(TemplateView):
                 user=self.request.user
             )
 
+        # # Делаем свой Пагинатор для feedback_list
+        # from django.core.paginator import Paginator
+        # # Инициализируем пагинатор, передаём ему object_list и сколько единиц выводить на страницу
+        # paginator = Paginator(context_data['feedback_list'], 2)
+        # # выдаём номер страницы
+        # paginator.page(1)
         return context_data
 
 

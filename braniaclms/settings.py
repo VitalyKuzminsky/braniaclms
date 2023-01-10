@@ -31,10 +31,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-if DEBUG:
-    INTERNAL_IPS = [
-        "127.0.0.1",
-    ]
+# if DEBUG:
+#     INTERNAL_IPS = [
+#         "127.0.0.1",
+#     ]
 
 # Настройки для подключения кеша
 CACHES = {
@@ -50,6 +50,12 @@ CACHES = {
 # Настройки для Отложеных задач через celery
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+# Внутренний встроенный миханизм Django по оперативному логированию:
+# 500-ые ошибки с выстевленным флагом DEBUG = False, будут приходить на эту почту:
+# ADMINS = (
+#     ('email@email.ru', 'Oleg')
+# )
 
 # EMAIL_HOST = "localhost"
 # EMAIL_PORT = "25"
@@ -72,7 +78,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'crispy_forms',
-    'debug_toolbar',
+    # 'debug_toolbar',
 
     'authapp',
     'mainapp',
@@ -81,6 +87,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -148,6 +155,7 @@ LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Europe/Moscow'
 
+# Это интернационализация:
 USE_I18N = True
 
 USE_TZ = True
@@ -260,3 +268,6 @@ LOGGING = {
         "django": {"level": "INFO", "handlers": ["file", "console"]},
     },
 }
+
+# Для перевода собираем локаль - информация по языку
+LOCALE_PATHS = [BASE_DIR / 'locale']

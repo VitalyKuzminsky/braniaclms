@@ -15,6 +15,7 @@ class CustomLoginView(LoginView):
         'title': 'Вход пользователя'
     }
 
+
 class RegisterView(CreateView):
     model = User  # описываем модель
     form_class = CustomUserCreationForm  # написанный перед этим класс в forms.py
